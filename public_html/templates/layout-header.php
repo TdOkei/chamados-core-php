@@ -26,6 +26,7 @@ $menus = [
         ['icon' => 'bar-chart',    'label' => 'Relatórios',  'page' => 'relatorios', 'href' => '/pages/relatorios.php'],
         ['icon' => 'shield-check', 'label' => 'Auditoria',   'page' => 'auditoria',  'href' => '/pages/auditoria.php'],
         ['icon' => 'image',        'label' => 'Imagens',     'page' => 'gestao-imagens', 'href' => '/pages/gestao-imagens.php'],
+        ['icon' => 'settings',     'label' => 'Remessa',     'page' => 'configuracoes', 'href' => '/pages/configuracoes.php'],
     ],
     App::PERFIL_ADMINISTRADOR => [
         ['icon' => 'grid',   'label' => 'Dashboard',     'page' => 'dashboard',     'href' => '/dashboard.php'],
