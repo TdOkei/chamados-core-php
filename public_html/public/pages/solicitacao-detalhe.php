@@ -359,11 +359,10 @@ require_once __DIR__ . '/../../templates/layout-header.php';
         <?php else: ?>
           <?php
           $qrUrl = $service->gerarQrUrl($solicitacao['qr_token']);
-          $qrImg = "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" . urlencode($qrUrl);
           ?>
           <div style="display:flex;flex-direction:column;align-items:center;gap:var(--space-3);padding:var(--space-2);">
             <div style="padding:var(--space-3);background:var(--white);border:3px solid var(--neutral-100);border-radius:var(--radius-lg);">
-              <img src="<?= $qrImg ?>" alt="QR Code" style="width:160px;height:160px;display:block;">
+              <img id="qrImgLocal" data-qr="<?= htmlspecialchars($qrUrl, ENT_QUOTES) ?>" src="" alt="QR Code" style="width:160px;height:160px;display:block;">
             </div>
             <p style="font-size:12px;color:var(--secondary);text-align:center;max-width:200px;">
               <?php if ($solicitacao['status'] === App::STATUS_DESPACHADO): ?>
@@ -374,7 +373,7 @@ require_once __DIR__ . '/../../templates/layout-header.php';
                 Disponível para uso quando o pedido for despachado.
               <?php endif; ?>
             </p>
-            <a href="<?= $qrImg ?>" download="qr-<?= $solicitacao['id'] ?>.png" class="btn btn-outline btn-sm">
+            <a id="qrDownloadLocal" href="#" download="qr-<?= $solicitacao['id'] ?>.png" class="btn btn-outline btn-sm">
               <i data-lucide="download" width="14" height="14"></i> Salvar QR Code
             </a>
           </div>
@@ -548,6 +547,18 @@ require_once __DIR__ . '/../../templates/layout-header.php';
   </div>
 </div>
 
+<script src="/assets/js/qrcode.js"></script>
+<script src="/assets/js/qr-local.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var img = document.getElementById('qrImgLocal');
+  if (!img) return;
+  var png = tdQrDataUrl(img.dataset.qr, 400);
+  img.src = png;
+  var a = document.getElementById('qrDownloadLocal');
+  if (a) a.href = png;
+});
+</script>
 <script>
 const solId       = <?= $solicitacao['id'] ?>;
 const solCategoria= '<?= $solicitacao['categoria'] ?>';

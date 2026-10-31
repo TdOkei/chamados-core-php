@@ -240,6 +240,8 @@ require_once __DIR__ . '/../../templates/layout-header.php';
 .modal-body { scrollbar-width: thin; scrollbar-color: var(--neutral-300) transparent; }
 </style>
 
+<script src="/assets/js/qrcode.js"></script>
+<script src="/assets/js/qr-local.js"></script>
 <script>
 // ---- Filtros ----
 function filtrarFila() {
@@ -436,11 +438,14 @@ async function verQrCode(id, token) {
   document.getElementById('modalQr').style.display = 'flex';
   document.getElementById('qrLabel').textContent = `Solicitação #${String(id).padStart(4,'0')}`;
 
-  // Gera QR via Google Charts API (sem dependência externa pesada)
+  // QR gerado localmente no navegador (sem serviço externo)
   const url = `<?= $_ENV['APP_URL'] ?? '' ?>/public/pages/qr-leitura.php?token=${encodeURIComponent(token)}`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
+  const qrUrl = tdQrDataUrl(url, 400);
 
-  document.getElementById('qrImg').src = qrUrl;
+  const qrImgEl = document.getElementById('qrImg');
+  qrImgEl.src = qrUrl;
+  qrImgEl.style.width = '200px';
+  qrImgEl.style.height = '200px';
   document.getElementById('qrDownload').href = qrUrl;
   document.getElementById('qrDownload').download = `qr-solicitacao-${id}.png`;
 }

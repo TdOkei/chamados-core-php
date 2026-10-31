@@ -171,3 +171,9 @@ Os commits seguem o padrão [Conventional Commits](https://www.conventionalcommi
 ## Licença
 
 Distribuído sob a licença **GNU AGPL-3.0**. Veja o arquivo [LICENSE](LICENSE).
+
+## Componentes de terceiros
+
+O QR Code é gerado localmente, no navegador, com a biblioteca MIT
+[qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator).
+Nenhum dado é enviado a serviços externos. Detalhes em [THIRD-PARTY.md](THIRD-PARTY.md).
