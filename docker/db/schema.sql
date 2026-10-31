@@ -339,6 +339,7 @@ CREATE TABLE `solicitacoes` (
   `foto_servico` varchar(255) DEFAULT NULL,
   `qr_token` varchar(64) DEFAULT NULL,
   `qr_invalidado` tinyint(1) NOT NULL DEFAULT 0,
+  `remessa_impressoes` int(11) NOT NULL DEFAULT 0,
   `nome_recebedor` varchar(150) DEFAULT NULL COMMENT 'Preenchido na conclusão via QR',
   `obs_item_falta` varchar(400) DEFAULT NULL COMMENT 'Preenchido quando há item faltando',
   `cancelado_por` int(11) DEFAULT NULL,

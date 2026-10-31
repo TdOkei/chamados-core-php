@@ -355,6 +355,9 @@ require_once __DIR__ . '/../../templates/layout-header.php';
           <div class="empty-state" style="padding:var(--space-6);">
             <i data-lucide="qr-code" width="32" height="32" style="color:var(--neutral-300);margin:0 auto;"></i>
             <p style="font-size:13px;color:var(--secondary);">QR Code invalidado após conclusão.</p>
+            <?php if (\App\Helpers\Session::isAdmin() || \App\Helpers\Session::isSuperadmin()): ?>
+            <a href="/pages/remessa.php?id=<?= (int) $solicitacao['id'] ?>" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="margin-top:8px;">Reimprimir Remessa</a>
+            <?php endif; ?>
           </div>
         <?php else: ?>
           <?php
@@ -373,6 +376,12 @@ require_once __DIR__ . '/../../templates/layout-header.php';
                 Disponível para uso quando o pedido for despachado.
               <?php endif; ?>
             </p>
+            <?php if ((\App\Helpers\Session::isAdmin() || \App\Helpers\Session::isSuperadmin())
+                    && in_array($solicitacao['status'], [App::STATUS_DESPACHADO, App::STATUS_ITEM_EM_FALTA], true)): ?>
+            <a href="/pages/remessa.php?id=<?= (int) $solicitacao['id'] ?>" target="_blank" rel="noopener" class="btn btn-primary btn-sm">
+              <i data-lucide="printer" width="14" height="14"></i> Imprimir Remessa
+            </a>
+            <?php endif; ?>
             <a id="qrDownloadLocal" href="#" download="qr-<?= $solicitacao['id'] ?>.png" class="btn btn-outline btn-sm">
               <i data-lucide="download" width="14" height="14"></i> Salvar QR Code
             </a>

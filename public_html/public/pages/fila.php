@@ -190,6 +190,7 @@ require_once __DIR__ . '/../../templates/layout-header.php';
         <div class="qr-label" id="qrLabel"></div>
       </div>
       <div class="mt-4">
+        <a id="qrRemessa" href="#" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="margin-right:8px;"><i data-lucide="printer" width="14" height="14"></i> Imprimir Remessa</a>
         <a id="qrDownload" href="#" download="qrcode-solicitacao.png" class="btn btn-outline btn-sm">
           <i data-lucide="download" width="14" height="14"></i> Salvar imagem
         </a>
@@ -442,6 +443,7 @@ async function verQrCode(id, token) {
   const url = `<?= $_ENV['APP_URL'] ?? '' ?>/public/pages/qr-leitura.php?token=${encodeURIComponent(token)}`;
   const qrUrl = tdQrDataUrl(url, 400);
 
+  document.getElementById('qrRemessa').href = '/pages/remessa.php?id=' + encodeURIComponent(id);
   const qrImgEl = document.getElementById('qrImg');
   qrImgEl.src = qrUrl;
   qrImgEl.style.width = '200px';
