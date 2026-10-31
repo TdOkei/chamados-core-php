@@ -1,0 +1,23 @@
+# Credenciais e configuração sensível
+public_html/.env
+
+# Uploads de usuários (fotos)
+uploads/
+
+# Backups
+*.sql
+*.tar.gz
+
+# Dependências
+public_html/vendor/
+public_html/node_modules/
+
+# Cache e temporários
+public_html/cache/
+*.log
+.DS_Store
+cookies.txt
+*.bak
+.env
+!docker/db/schema.sql
+!docker/db/seed.sql
