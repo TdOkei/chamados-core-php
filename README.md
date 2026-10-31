@@ -84,7 +84,7 @@ Todos usam a senha provisória **`Trocar@123`**:
 | `escriturario` | escriturário da "Escola Exemplo" |
 | `estagiario` | estagiário da "Escola Exemplo" |
 
-> **Troque as senhas no primeiro acesso e apague os usuários de exemplo antes de usar em produção.**
+> O `admin` é **obrigado a trocar a senha no primeiro acesso**. Troque também as senhas dos demais usuários de exemplo e apague-os antes de usar em produção.
 
 Os dados de exemplo (`docker/db/seed.sql`) só são carregados quando o banco é criado do zero. Para recomeçar: `docker compose down -v` apaga o banco e o `./install.sh` (ou `docker compose up -d`) o recria.
 

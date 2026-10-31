@@ -157,8 +157,14 @@ class AuthService
             return $this->fail('Senha atual incorreta.');
         }
 
+        // Troca obrigatoria (senha provisoria): a nova senha nao pode ser igual a atual
+        if (Session::precisaTrocarSenha() && password_verify($novaSenha, $completo['senha_hash'])) {
+            return $this->fail('A nova senha deve ser diferente da senha provisória.');
+        }
+
         $novoHash = password_hash($novaSenha, PASSWORD_BCRYPT, ['cost' => 12]);
         $this->repo->atualizarSenha($idUsuario, $novoHash);
+        Session::set('trocar_senha', false);
 
         return [
             'success' => true,

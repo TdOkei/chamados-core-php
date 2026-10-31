@@ -37,3 +37,6 @@ INSERT INTO produtos (nome, categoria, descricao, ativo) VALUES
   ('Sabonete Liquido',  'higiene',   NULL, 1),
   ('Detergente',        'limpeza',   NULL, 1),
   ('Desinfetante',      'limpeza',   NULL, 1);
+
+-- O superadmin de exemplo e obrigado a trocar a senha provisoria no primeiro acesso.
+UPDATE usuarios SET trocar_senha = 1 WHERE username = 'admin';

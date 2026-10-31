@@ -81,6 +81,8 @@ class Session
         self::set('usuario_email', $usuario['email']);
         self::set('usuario_categoria', $usuario['categoria'] ?? null);
         self::set('id_escola',    $usuario['id_escola'] ?? null);
+        // Troca obrigatoria de senha: so vale para o superadmin
+        self::set('trocar_senha', !empty($usuario['trocar_senha']) && $usuario['perfil'] === App::PERFIL_SUPERADMIN);
         self::set('ultimo_acesso', time());
     }
 
@@ -119,6 +121,11 @@ class Session
     public static function isDiretor(): bool
     {
         return in_array(self::getPerfil(), App::PERFIS_OPERACIONAIS_ESCOLA, true);
+    }
+
+    public static function precisaTrocarSenha(): bool
+    {
+        return (bool) self::get('trocar_senha', false);
     }
 
     // Mensagem flash (exibida uma vez)

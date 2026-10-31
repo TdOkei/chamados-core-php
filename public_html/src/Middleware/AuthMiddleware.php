@@ -26,6 +26,9 @@ class AuthMiddleware
 
         // Verifica se a conta do usuário ainda está ativa (pode ter sido desativada)
         self::verificarContaAtiva($isApi);
+
+        // Senha provisoria do superadmin: so libera a tela de troca de senha
+        self::exigirTrocaDeSenha($isApi);
     }
 
     /**
@@ -110,6 +113,30 @@ class AuthMiddleware
             }
         } catch (\Throwable $e) {
             // Em caso de erro de banco, não derruba a sessão
+        }
+    }
+
+    /**
+     * Superadmin com senha provisoria: libera apenas Meu Perfil, a troca de
+     * senha, o logout e a renovacao de sessao. O resto e redirecionado/barrado.
+     */
+    private static function exigirTrocaDeSenha(bool $isApi): void
+    {
+        if (!Session::precisaTrocarSenha()) return;
+
+        $liberados = [
+            '/pages/meu-perfil.php',
+            '/api/auth/alterar-senha.php',
+            '/api/auth/logout.php',
+            '/api/auth/renovar-sessao.php',
+        ];
+        if (in_array($_SERVER['SCRIPT_NAME'] ?? '', $liberados, true)) return;
+
+        if ($isApi) {
+            Response::forbidden('Troque a senha provisória para continuar.');
+        } else {
+            Session::flash('info', 'Por segurança, troque a senha provisória antes de continuar.');
+            Response::redirect('/pages/meu-perfil.php');
         }
     }
 

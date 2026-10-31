@@ -415,6 +415,7 @@ CREATE TABLE `usuarios` (
   `ativo` tinyint(1) NOT NULL DEFAULT 1,
   `tentativas_login` int(11) NOT NULL DEFAULT 0,
   `bloqueado` tinyint(1) NOT NULL DEFAULT 0,
+  `trocar_senha` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Forca troca de senha no proximo login (superadmin do seed)',
   `ultimo_login` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),

@@ -22,7 +22,7 @@ class AuthRepository
     {
         $stmt = $this->db->prepare(
             'SELECT id, nome, username, email, senha_hash, perfil, categoria,
-                    id_escola, ativo, tentativas_login, bloqueado, ultimo_login
+                    id_escola, ativo, tentativas_login, bloqueado, ultimo_login, trocar_senha
              FROM usuarios
              WHERE (username = :id1 OR email = :id2)
              LIMIT 1'
@@ -113,7 +113,8 @@ class AuthRepository
             'UPDATE usuarios
              SET senha_hash = :hash,
                  tentativas_login = 0,
-                 bloqueado = 0
+                 bloqueado = 0,
+                 trocar_senha = 0
              WHERE id = :id'
         );
         $stmt->execute([':hash' => $novaSenhaHash, ':id' => $id]);
