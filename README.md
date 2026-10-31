@@ -155,7 +155,8 @@ docker compose exec -T db sh -c 'mariadb-dump -u"$MARIADB_USER" -p"$MARIADB_PASS
 tar czf uploads-backup.tar.gz uploads/
 ```
 
-**Atualizar:** `git pull && docker compose up -d --build --wait`
+**Atualizar:** `git pull && docker compose build --pull && docker compose up -d --wait`  
+O `--pull` traz sempre o PHP mais recente. Mantenha o PHP atualizado: ele recebe correções de segurança com frequência.
 
 **Produção:** coloque o sistema atrás de HTTPS (proxy reverso), use `APP_ENV=production`, `APP_DEBUG=false` e senhas fortes, e restrinja o acesso ao `.env`.
 
