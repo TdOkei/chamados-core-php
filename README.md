@@ -1,6 +1,15 @@
 # TdOkei — Gestão de Solicitações Escolares
 
-Sistema web de fila de pedidos entre escolas municipais e a Secretaria de Ensino. Diretores e equipes das escolas solicitam **produtos** (papelaria, higiene, limpeza) e **serviços** (manutenção, reparos), e a Secretaria acompanha, atende e confirma a entrega com QR Code.
+> **Fila de pedidos entre escolas municipais e a Secretaria de Ensino.** Solicitações de produtos e serviços, acompanhamento em tempo real, confirmação de entrega por QR Code, oportunidades e auditoria completa. Instalação em um comando, com Docker.
+
+![versão](https://img.shields.io/badge/vers%C3%A3o-1.0-E8472F)
+![licença](https://img.shields.io/badge/licen%C3%A7a-AGPL--3.0-blue)
+![php](https://img.shields.io/badge/php-8.3-777BB4?logo=php&logoColor=white)
+![mariadb](https://img.shields.io/badge/mariadb-11.4-003545?logo=mariadb&logoColor=white)
+![nginx](https://img.shields.io/badge/nginx-1.27-009639?logo=nginx&logoColor=white)
+![javascript](https://img.shields.io/badge/javascript-vanilla-F7DF1E?logo=javascript&logoColor=black)
+![docker](https://img.shields.io/badge/docker-compose-2496ED?logo=docker&logoColor=white)
+![visibilidade](https://img.shields.io/badge/visibilidade-p%C3%BAblico-2EA44F)
 
 ---
 
