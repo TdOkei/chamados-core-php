@@ -165,8 +165,8 @@ class SolicitacaoService
         $solicitacao = $this->repo->buscarPorId($idSolicitacao);
         if (!$solicitacao) return $this->fail('Solicitação não encontrada.');
 
-        // Pertence ao diretor
-        if ((int) $solicitacao['diretor_id'] !== $idDiretor || (int) $solicitacao['escola_id'] !== $idEscola) {
+        // Pertence à escola de quem cancela (diretor, escriturário ou estagiário da mesma escola)
+        if ((int) $solicitacao['escola_id'] !== $idEscola) {
             return $this->fail('Você não tem permissão para cancelar esta solicitação.');
         }
 
@@ -181,8 +181,8 @@ class SolicitacaoService
         }
 
         $this->repo->atualizarStatus($idSolicitacao, App::STATUS_CANCELADO, ['cancelado_por' => $idDiretor]);
-        AuditoriaService::solicitacao('cancelar', $idSolicitacao, "Solicitacao cancelada pelo diretor.");
-        $this->repo->registrarHistorico($idSolicitacao, $idDiretor, App::STATUS_PENDENTE, App::STATUS_CANCELADO, 'Cancelado pelo diretor.');
+        AuditoriaService::solicitacao('cancelar', $idSolicitacao, "Solicitacao cancelada pela escola.");
+        $this->repo->registrarHistorico($idSolicitacao, $idDiretor, App::STATUS_PENDENTE, App::STATUS_CANCELADO, 'Cancelado pela escola.');
 
         return $this->ok('Solicitação cancelada com sucesso.');
     }

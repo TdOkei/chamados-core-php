@@ -12,7 +12,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     Response::error('Método não permitido.', 405);
 }
 
-$body   = json_decode(file_get_contents('php://input'), true) ?? [];
+if (!empty($_POST['payload'])) {
+    $body = json_decode((string) $_POST['payload'], true) ?? [];
+    if (!empty($_FILES['foto'])) $body['_foto'] = $_FILES['foto'];
+} else {
+    $body = json_decode(file_get_contents('php://input'), true) ?? [];
+}
 $acao   = $body['acao']   ?? '';
 $token  = $body['token']  ?? '';
 $service= new QrCodeService();

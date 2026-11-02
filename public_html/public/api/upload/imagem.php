@@ -9,7 +9,7 @@ use App\Config\App;
 AuthMiddleware::check();
 
 $arquivo = basename($_GET["arquivo"] ?? "");
-if (!$arquivo || !preg_match('/^sol_[0-9]+_[0-9]+_[a-f0-9]+\.(jpg|png)$/', $arquivo)) {
+if (!$arquivo || !preg_match('/^(sol|con)_[0-9]+_[0-9]+_[a-f0-9]+\.(jpg|png)$/', $arquivo)) {
     http_response_code(400);
     exit("Arquivo invalido.");
 }

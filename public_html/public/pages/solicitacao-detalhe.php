@@ -391,6 +391,16 @@ require_once __DIR__ . '/../../templates/layout-header.php';
 
       <?php endif; ?>
 
+      <?php if (!empty($solicitacao['foto_conclusao'])): ?>
+      <div class="card" style="padding:var(--space-5);margin-bottom:var(--space-4);">
+        <h3 class="card-title" style="margin-bottom:var(--space-3);">Foto do serviço concluído</h3>
+        <a href="/api/upload/imagem.php?arquivo=<?= urlencode($solicitacao['foto_conclusao']) ?>" target="_blank" rel="noopener">
+          <img src="/api/upload/imagem.php?arquivo=<?= urlencode($solicitacao['foto_conclusao']) ?>" alt="Foto do serviço concluído"
+               style="width:100%;border-radius:var(--radius-lg);display:block;">
+        </a>
+      </div>
+      <?php endif; ?>
+
       <!-- Histórico de status -->
       <?php if (!empty($solicitacao['historico'])): ?>
       <div class="card" style="border-radius:var(--radius-xl);">

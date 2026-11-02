@@ -163,6 +163,12 @@ require_once __DIR__ . '/../../templates/layout-header.php';
           <div class="form-hint">Este nome ficara registrado como confirmacao da entrega.</div>
         </div>
 
+        <div class="form-group" id="blocoFotoConclusao" style="display:none;">
+          <label class="form-label">Foto do serviço concluído <span class="required">*</span></label>
+          <input type="file" id="inputFotoConclusao" accept="image/*" class="form-control">
+          <div class="form-hint">Fotografe o serviço finalizado. Esta foto fica registrada no histórico do pedido.</div>
+        </div>
+
         <div id="alertaConfirmacao" style="display:none;" class="mb-4"></div>
 
         <button class="btn btn-primary w-100" id="btnConfirmarEntrega" onclick="confirmarEntrega()" style="height:48px;font-size:15px;">
@@ -195,6 +201,7 @@ require_once __DIR__ . '/../../templates/layout-header.php';
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="/assets/js/img-resize.js"></script>
 <script>
 let videoStream = null;
 let scanInterval = null;
@@ -313,6 +320,9 @@ async function processarToken(token) {
       document.getElementById('checkItemFaltando').checked = false;
       document.getElementById('obsConfirmacao').value = '';
       itensAtuais = data.data.itens || [];
+      exigeFotoConclusao = !!data.data.exige_foto_conclusao;
+      document.getElementById('blocoFotoConclusao').style.display = exigeFotoConclusao ? '' : 'none';
+      document.getElementById('inputFotoConclusao').value = '';
       itensParcialmenteEntregues = data.data.itens_ja_entregues || [];
       renderizarItens();
       toggleItemFaltando();
@@ -336,6 +346,7 @@ async function confirmarRetorno() {
 
 let itensAtuais = [];
 let itensParcialmenteEntregues = [];
+let exigeFotoConclusao = false;
 
 function renderizarItens() {
   const lista = document.getElementById('listaItens');
@@ -435,17 +446,34 @@ async function confirmarEntrega() {
     const btn = document.getElementById('btnConfirmarEntrega');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;border-top-color:var(--white);"></span>';
-    await enviarResultado('concluido', obs, [], []);
+    let foto = null;
+    if (exigeFotoConclusao) {
+      foto = document.getElementById('inputFotoConclusao').files[0] || null;
+      if (!foto) {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="check" width="16" height="16"></i> Confirmar recebimento';
+        if (window.lucide) lucide.createIcons();
+        mostrarAlerta('alertaConfirmacao', 'Envie a foto do serviço concluído.', 'danger');
+        return;
+      }
+    }
+    await enviarResultado('concluido', obs, [], [], foto);
   }
 }
 
-async function enviarResultado(cenario, observacao, itensFaltando = [], itensEntregues = []) {
+async function enviarResultado(cenario, observacao, itensFaltando = [], itensEntregues = [], foto = null) {
   try {
-    const res  = await fetch('/api/qrcode/index.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ acao: 'processar', token: tokenAtual, cenario, observacao, itens_faltando: itensFaltando, itens_entregues: itensEntregues }),
-    });
+    const corpo = { acao: 'processar', token: tokenAtual, cenario, observacao, itens_faltando: itensFaltando, itens_entregues: itensEntregues };
+    let init;
+    if (foto) {
+      const fd = new FormData();
+      fd.append('payload', JSON.stringify(corpo));
+      fd.append('foto', await tdReduzirImagem(foto), 'foto.jpg');
+      init = { method: 'POST', body: fd };
+    } else {
+      init = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) };
+    }
+    const res  = await fetch('/api/qrcode/index.php', init);
     const data = await res.json();
 
     if (data.success) {

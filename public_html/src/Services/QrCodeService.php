@@ -86,6 +86,7 @@ class QrCodeService
                 'token'              => $token,
                 'itens'              => $itens,
                 'itens_ja_entregues' => $itensJaEntregues,
+                'exige_foto_conclusao' => $this->exigeFotoConclusao($solicitacao),
             ],
         ];
     }
@@ -166,8 +167,15 @@ class QrCodeService
         if ($cenario === 'concluido') {
             if (empty($obs)) return $this->fail('Informe o nome de quem recebeu o pedido.');
             if (mb_strlen($obs) > 150) return $this->fail('Nome muito longo (máx. 150 caracteres).');
+            $nomeFoto = null;
+            if ($this->exigeFotoConclusao($solicitacao)) {
+                $rf = $this->salvarFotoConclusao($idSol, $body['_foto'] ?? null);
+                if (!$rf['success']) return $rf;
+                $nomeFoto = $rf['data']['arquivo'];
+            }
             $this->repo->atualizarStatus($idSol, App::STATUS_CONCLUIDO, ['nome_recebedor' => $obs, 'qr_invalidado' => true]);
             $this->repo->registrarHistorico($idSol, $idDiretor, $stAnt, App::STATUS_CONCLUIDO, "Recebido por: {$obs}");
+            if ($nomeFoto) { $this->repo->salvarFotoConclusao($idSol, $nomeFoto); }
             $this->repo->registrarLogQr($idSol, $idDiretor, $token, 'sucesso', $this->ip(), $this->ua(), "Recebido por: {$obs}");
             $this->notifAdmin($solicitacao, 'concluido');
             $this->notifSuperadmins($idSol, $solicitacao['escola_nome']);
@@ -182,6 +190,36 @@ class QrCodeService
     }
 
     // ----------------------------------------------------------------
+    private function exigeFotoConclusao(array $sol): bool
+    {
+        return ($sol['categoria'] ?? '') === 'servico' && !empty($sol['foto_servico']);
+    }
+
+    private function salvarFotoConclusao(int $idSol, $arq): array
+    {
+        if (!is_array($arq) || ($arq['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            return $this->fail('Envie a foto do serviço concluído.');
+        }
+        if ($arq['size'] > 5 * 1024 * 1024) {
+            return $this->fail('Foto muito grande. Máximo 5 MB.');
+        }
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mime  = $finfo->file($arq['tmp_name']);
+        if (!in_array($mime, ['image/jpeg', 'image/png'], true) || @getimagesize($arq['tmp_name']) === false) {
+            return $this->fail('Foto inválida. Envie uma imagem JPG ou PNG.');
+        }
+        $dir = rtrim($_ENV['UPLOADS_PATH'] ?? '/var/www/uploads', '/') . '/servicos';
+        if (!is_dir($dir) && !@mkdir($dir, 0755, true)) {
+            return $this->fail('Não foi possível preparar a pasta de imagens no servidor.');
+        }
+        $ext  = $mime === 'image/png' ? 'png' : 'jpg';
+        $nome = 'con_' . $idSol . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+        if (!move_uploaded_file($arq['tmp_name'], $dir . '/' . $nome)) {
+            return $this->fail('Erro ao salvar a foto no servidor.');
+        }
+        return $this->ok('Foto salva.', ['arquivo' => $nome]);
+    }
+
     private function notifAdmin(array $sol, string $resultado): void
     {
         $db   = Database::getInstance();

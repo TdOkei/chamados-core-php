@@ -158,6 +158,7 @@ require_once __DIR__ . '/../../templates/layout-header.php';
 .card-sel:hover { border-color:var(--primary)!important; box-shadow:var(--shadow-md); transform:translateY(-2px); }
 </style>
 
+<script src="/assets/js/img-resize.js"></script>
 <script>
 const produtos = <?= json_encode(array_values($produtos)) ?>;
 const unidades = <?= json_encode(array_values($unidades)) ?>;
@@ -341,7 +342,7 @@ async function enviarSolicitacao(categoria) {
       let avisoFoto = '';
       if (categoria === 'servico' && payload._foto) {
         const formData = new FormData();
-        formData.append('foto', payload._foto);
+        formData.append('foto', await tdReduzirImagem(payload._foto), 'foto.jpg');
         formData.append('id_solicitacao', data.data.id);
         try {
           const up = await fetch('/api/upload/servico.php', { method: 'POST', body: formData });

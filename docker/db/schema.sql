@@ -337,6 +337,7 @@ CREATE TABLE `solicitacoes` (
   `status` enum('pendente','em_analise','em_processamento','despachado','retornado','item_em_falta','concluido','cancelado','rejeitado') NOT NULL DEFAULT 'pendente',
   `descricao_servico` varchar(300) DEFAULT NULL COMMENT 'Apenas para serviços',
   `foto_servico` varchar(255) DEFAULT NULL,
+  `foto_conclusao` varchar(255) DEFAULT NULL,
   `qr_token` varchar(64) DEFAULT NULL,
   `qr_invalidado` tinyint(1) NOT NULL DEFAULT 0,
   `remessa_impressoes` int(11) NOT NULL DEFAULT 0,

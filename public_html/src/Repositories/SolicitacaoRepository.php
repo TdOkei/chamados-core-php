@@ -218,6 +218,12 @@ class SolicitacaoRepository
     // Histórico de status
     // ----------------------------------------------------------------
 
+    public function salvarFotoConclusao(int $id, string $arquivo): void
+    {
+        $stmt = $this->db->prepare('UPDATE solicitacoes SET foto_conclusao = :f, updated_at = updated_at WHERE id = :id');
+        $stmt->execute([':f' => $arquivo, ':id' => $id]);
+    }
+
     public function registrarHistorico(int $idSolicitacao, int $idUsuario, ?string $statusAnterior, string $statusNovo, ?string $obs = null): void
     {
         $stmt = $this->db->prepare(
