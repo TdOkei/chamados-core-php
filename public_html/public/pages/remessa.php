@@ -77,6 +77,9 @@ $ehServico = $sol['categoria'] === 'servico';
   .assin div { flex: 1; border-top: 1px solid #111; padding-top: 4px; font-size: 11px; }
   .carimbo { border: 4px double #166534; color: #166534; padding: 14px; text-align: center; margin: 14px 0; }
   .carimbo b { font-size: 22px; display: block; letter-spacing: 1px; }
+  .foto-conc { margin-top: 14px; break-inside: avoid; page-break-inside: avoid; }
+  .foto-conc img { display: block; max-width: 100%; max-height: 80mm; margin: 0 auto; border: 1px solid #999; object-fit: contain; }
+  .foto-conc .leg { font-size: 10px; color: #555; text-align: center; margin-top: 4px; }
   .rodape { position: absolute; left: 12mm; right: 12mm; bottom: 8mm; font-size: 10px; color: #555; display: flex; justify-content: space-between; }
   @media print {
     body { background: #fff; }
@@ -167,6 +170,14 @@ $ehServico = $sol['categoria'] === 'servico';
     </div>
     <?php endif; ?>
   </div>
+
+  <?php if ($d['concluida'] && !empty($sol['foto_conclusao'])): ?>
+  <div class="foto-conc">
+    <h3>Foto do serviço concluído</h3>
+    <img src="/api/upload/imagem.php?arquivo=<?= urlencode($sol['foto_conclusao']) ?>" alt="Foto do serviço concluído">
+    <div class="leg">Registrada pela escola na confirmação da entrega<?= $d['conclusao_em'] ? ' em ' . $h($dt($d['conclusao_em'])) : '' ?>.</div>
+  </div>
+  <?php endif; ?>
 
   <?php if (!$d['concluida']): ?>
   <div class="assin">
