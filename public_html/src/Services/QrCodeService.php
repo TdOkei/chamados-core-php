@@ -145,7 +145,17 @@ class QrCodeService
             if (empty($nomeRecebedor)) return $this->fail('Informe o nome de quem recebeu os itens.');
             if (mb_strlen($nomeRecebedor) > 150) return $this->fail('Nome muito longo (max. 150 caracteres).');
 
-            $obs = 'Recebido por: ' . $nomeRecebedor . '. Itens faltantes: ' . implode(', ', $nomesItens);
+            $nomesEntregues = [];
+            $idsEntregues = array_map('intval', $itensEntregues);
+            foreach ($todosItens as $item) {
+                if (in_array((int) $item['id'], $idsEntregues, true)) {
+                    $nomesEntregues[] = $item['produto_nome'] . ' (' . number_format((float) $item['quantidade'], 2, ',', '.') . ' ' . $item['unidade_sigla'] . ')';
+                }
+            }
+            $obs = 'Recebido por: ' . $nomeRecebedor
+                 . ($nomesEntregues ? '. Itens entregues: ' . implode(', ', $nomesEntregues) : '')
+                 . '. Itens faltantes: ' . implode(', ', $nomesItens);
+            $obs = mb_strimwidth($obs, 0, 400, '…');
 
             // Registra log do QR e captura o id inserido
             $this->repo->registrarLogQr($idSol, $idDiretor, $token, 'item_em_falta', $this->ip(), $this->ua(), $obs);
@@ -173,9 +183,24 @@ class QrCodeService
                 if (!$rf['success']) return $rf;
                 $nomeFoto = $rf['data']['arquivo'];
             }
+            // Itens entregues nesta viagem final: todos os que ainda nao tinham sido entregues
+            $jaEntregues = array_map('intval', $this->repo->buscarItensEntregues($idSol));
+            $nomesFinal  = [];
+            foreach ($this->repo->buscarItens($idSol) as $item) {
+                if (!in_array((int) $item['id'], $jaEntregues, true)) {
+                    $nomesFinal[] = $item['produto_nome'] . ' (' . number_format((float) $item['quantidade'], 2, ',', '.') . ' ' . $item['unidade_sigla'] . ')';
+                }
+            }
+            $txtEntrega = mb_strimwidth('Recebido por: ' . $obs . ($nomesFinal ? '. Itens entregues: ' . implode(', ', $nomesFinal) : ''), 0, 400, '…');
             $this->repo->atualizarStatus($idSol, App::STATUS_CONCLUIDO, ['nome_recebedor' => $obs, 'qr_invalidado' => true, 'foto_conclusao' => $nomeFoto]);
-            $this->repo->registrarHistorico($idSol, $idDiretor, $stAnt, App::STATUS_CONCLUIDO, "Recebido por: {$obs}");
-            $this->repo->registrarLogQr($idSol, $idDiretor, $token, 'sucesso', $this->ip(), $this->ua(), "Recebido por: {$obs}");
+            $this->repo->registrarHistorico($idSol, $idDiretor, $stAnt, App::STATUS_CONCLUIDO, $txtEntrega);
+            $this->repo->registrarLogQr($idSol, $idDiretor, $token, 'sucesso', $this->ip(), $this->ua(), $txtEntrega);
+            $idLogFinal = $this->repo->ultimoLogQrId();
+            foreach ($this->repo->buscarItens($idSol) as $item) {
+                if (!in_array((int) $item['id'], $jaEntregues, true)) {
+                    $this->repo->registrarItemEntregue($idSol, (int) $item['id'], $idLogFinal);
+                }
+            }
             $this->notifAdmin($solicitacao, 'concluido');
             $this->notifSuperadmins($idSol, $solicitacao['escola_nome']);
             CacheService::invalidarSolicitacoes();

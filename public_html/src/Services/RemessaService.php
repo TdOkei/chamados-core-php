@@ -76,6 +76,11 @@ class RemessaService
         return $this->ok([
             'sol'         => $sol,
             'itens'       => $this->repo->buscarItens($id),
+            'entregas' => $this->repo->buscarEntregasAgrupadas($id),
+            'itens_entregues' => array_map(
+                fn($x) => is_array($x) ? (int) ($x['id_item'] ?? $x['id'] ?? 0) : (int) $x,
+                $this->repo->buscarItensEntregues($id)
+            ),
             'historico'   => $this->repo->buscarHistorico($id),
             'escola'      => $escola,
             'cfg'         => (new ConfiguracaoService())->obterRemessa(),

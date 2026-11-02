@@ -39,6 +39,7 @@ $rotulos = [
     'concluido' => 'Concluído', 'cancelado' => 'Cancelado', 'rejeitado' => 'Rejeitado',
 ];
 $ehServico = $sol['categoria'] === 'servico';
+$temParcial = !$d['concluida'] && !empty($d['itens_entregues']);
 ?><!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -130,6 +131,7 @@ $ehServico = $sol['categoria'] === 'servico';
   <div class="duas">
     <div class="col-tab">
       <h3><?= $ehServico ? 'Serviço' : 'Itens da remessa' ?></h3>
+      <?php if ($temParcial): ?><div style="font-size:10px;margin-bottom:4px;">Remessa complementar: os itens marcados como "já entregue" foram recebidos em entrega anterior.</div><?php endif; ?>
       <?php if ($ehServico): ?>
         <table><tr><td><?= $h($sol['descricao_servico']) ?></td></tr></table>
         <?php if ($d['itens']): ?>
@@ -146,7 +148,7 @@ $ehServico = $sol['categoria'] === 'servico';
           <?php foreach ($d['itens'] as $k => $i): ?>
             <tr>
               <td><?= $k + 1 ?></td>
-              <td><?= $h($i['produto_nome']) ?></td>
+              <td><?= $h($i['produto_nome']) ?><?php if ($temParcial && in_array((int) $i['id'], $d['itens_entregues'], true)): ?> <em style="font-size:10px;">(já entregue)</em><?php endif; ?></td>
               <td><?= $h($i['unidade_sigla']) ?></td>
               <td class="n"><?= $h(number_format((float) $i['quantidade'], 2, ',', '.')) ?></td>
             </tr>
@@ -170,6 +172,20 @@ $ehServico = $sol['categoria'] === 'servico';
     </div>
     <?php endif; ?>
   </div>
+
+  <?php if (!$ehServico && !empty($d['entregas'])): ?>
+  <h3>Entregas realizadas</h3>
+  <table>
+    <tr><th style="width:110px;">Data / hora</th><th style="width:30%;">Recebido por</th><th>Itens entregues</th></tr>
+    <?php foreach ($d['entregas'] as $en): ?>
+      <tr>
+        <td><?= $en['quando'] ? $h($dt($en['quando'])) : '—' ?></td>
+        <td><?= $h($en['recebedor']) ?></td>
+        <td><?php foreach ($en['itens'] as $it): ?><?= $h($it['nome']) ?> — <?= $h(number_format($it['qtd'], 2, ',', '.')) ?> <?= $h($it['un']) ?><br><?php endforeach; ?></td>
+      </tr>
+    <?php endforeach; ?>
+  </table>
+  <?php endif; ?>
 
   <?php if ($d['concluida'] && !empty($sol['foto_conclusao'])): ?>
   <div class="foto-conc">

@@ -401,6 +401,25 @@ require_once __DIR__ . '/../../templates/layout-header.php';
       </div>
       <?php endif; ?>
 
+      <?php if (!empty($solicitacao['entregas'])): ?>
+      <div class="card" style="padding:var(--space-5);margin-bottom:var(--space-4);">
+        <h3 class="card-title" style="margin-bottom:var(--space-3);">Entregas realizadas</h3>
+        <?php foreach ($solicitacao['entregas'] as $en): ?>
+        <div style="padding:var(--space-3) 0;border-top:1px solid var(--neutral-100);">
+          <div style="font-size:13px;font-weight:var(--fw-semibold);">
+            <?= $en['quando'] ? date('d/m/Y H:i', strtotime((string) $en['quando'])) : 'Data não registrada' ?>
+            <?php if ($en['recebedor'] !== ''): ?> · Recebido por <?= htmlspecialchars($en['recebedor'], ENT_QUOTES) ?><?php endif; ?>
+          </div>
+          <ul style="margin:6px 0 0 18px;padding:0;font-size:13px;color:var(--secondary);">
+            <?php foreach ($en['itens'] as $it): ?>
+            <li><?= htmlspecialchars((string) $it['nome'], ENT_QUOTES) ?> — <?= number_format($it['qtd'], 2, ',', '.') ?> <?= htmlspecialchars((string) $it['un'], ENT_QUOTES) ?></li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+        <?php endforeach; ?>
+      </div>
+      <?php endif; ?>
+
       <!-- Histórico de status -->
       <?php if (!empty($solicitacao['historico'])): ?>
       <div class="card" style="border-radius:var(--radius-xl);">

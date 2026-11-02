@@ -228,6 +228,42 @@ class SolicitacaoRepository
         $stmt->execute([':f' => $arquivo, ':id' => $id]);
     }
 
+    /** Entregas agrupadas por viagem (leitura do QR): data, quem recebeu e itens. */
+    public function buscarEntregasAgrupadas(int $idSolicitacao): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT e.id_log_qrcode, si.quantidade, p.nome AS produto_nome, u.sigla AS unidade_sigla,
+                    l.created_at AS entregue_em, l.observacao AS log_obs
+             FROM solicitacao_itens_entregues e
+             JOIN solicitacao_itens si ON si.id = e.id_item
+             JOIN produtos p ON p.id = si.id_produto
+             JOIN unidades_medida u ON u.id = si.id_unidade
+             LEFT JOIN log_qrcode l ON l.id = e.id_log_qrcode
+             WHERE e.id_solicitacao = :sol
+             ORDER BY l.created_at ASC, e.id_log_qrcode ASC, p.nome ASC'
+        );
+        $stmt->execute([':sol' => $idSolicitacao]);
+
+        $viagens = [];
+        foreach ($stmt->fetchAll() as $r) {
+            $k = (string) ($r['id_log_qrcode'] ?? 'sem-registro');
+            if (!isset($viagens[$k])) {
+                $obs = (string) ($r['log_obs'] ?? '');
+                $rec = $obs;
+                if (preg_match('/^Recebido por: (.*?)(?:\. Itens (?:entregues|faltantes):|$)/su', $obs, $m)) {
+                    $rec = $m[1];
+                }
+                $viagens[$k] = ['quando' => $r['entregue_em'], 'recebedor' => trim($rec), 'itens' => []];
+            }
+            $viagens[$k]['itens'][] = [
+                'nome' => $r['produto_nome'],
+                'qtd'  => (float) $r['quantidade'],
+                'un'   => $r['unidade_sigla'],
+            ];
+        }
+        return array_values($viagens);
+    }
+
     public function registrarHistorico(int $idSolicitacao, int $idUsuario, ?string $statusAnterior, string $statusNovo, ?string $obs = null): void
     {
         $stmt = $this->db->prepare(

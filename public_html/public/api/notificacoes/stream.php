@@ -3,7 +3,7 @@
  * Server-Sent Events — Stream de notificações em tempo real
  * Substitui o polling de 60s do layout-footer.php
  *
- * Endpoint: GET /public/api/notificacoes/stream.php
+ * Endpoint: GET /api/notificacoes/stream.php
  * Configurado no nginx com fastcgi_buffering off
  */
 

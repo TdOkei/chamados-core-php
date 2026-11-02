@@ -210,6 +210,7 @@ class SolicitacaoService
 
         $solicitacao['itens']           = $this->repo->buscarItens($id);
         $solicitacao['itens_entregues'] = $this->repo->buscarItensEntregues($id);
+        $solicitacao['entregas']        = $this->repo->buscarEntregasAgrupadas($id);
         $solicitacao['historico']       = $this->repo->buscarHistorico($id);
         $solicitacao['comentarios']     = $this->comentarios->listar($id);
         return $solicitacao;
