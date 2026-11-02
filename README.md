@@ -90,6 +90,8 @@ Os dados de exemplo (`docker/db/seed.sql`) só são carregados quando o banco é
 
 ---
 
+> **Exportação para Excel:** usa `python3` com `openpyxl` (já incluídos na imagem Docker). Em instalação fora do Docker, instale-os no servidor (`apt install python3 python3-openpyxl`).
+
 ## Configuração (`.env`)
 
 | Variável | Descrição |
