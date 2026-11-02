@@ -440,7 +440,7 @@ async function verQrCode(id, token) {
   document.getElementById('qrLabel').textContent = `Solicitação #${String(id).padStart(4,'0')}`;
 
   // QR gerado localmente no navegador (sem serviço externo)
-  const url = `<?= $_ENV['APP_URL'] ?? '' ?>/public/pages/qr-leitura.php?token=${encodeURIComponent(token)}`;
+  const url = `<?= $_ENV['APP_URL'] ?? '' ?>/pages/qr-leitura.php?token=${encodeURIComponent(token)}`;
   const qrUrl = tdQrDataUrl(url, 400);
 
   document.getElementById('qrRemessa').href = '/pages/remessa.php?id=' + encodeURIComponent(id);

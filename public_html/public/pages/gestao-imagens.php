@@ -13,7 +13,7 @@ require_once __DIR__ . '/../../templates/layout-header.php';
     <div>
       <h2 class="text-h2">Gestão de Imagens</h2>
       <p class="text-body" style="color:var(--secondary);margin-top:4px;">
-        Imagens anexadas a solicitações de serviço armazenadas no servidor.
+        Fotos de abertura e de conclusão dos serviços armazenadas no servidor.
       </p>
     </div>
   </div>
@@ -126,10 +126,10 @@ function renderizar(imagens) {
     const dtStr = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     const kb  = img.tamanho ? (img.tamanho / 1024).toFixed(0) + ' KB' : 'N/A';
     return `
-    <div class="card" style="border-radius:var(--radius-xl);padding:0;overflow:hidden;" id="card-${img.id}">
+    <div class="card" style="border-radius:var(--radius-xl);padding:0;overflow:hidden;" id="card-${img.foto_servico}">
       <div style="position:relative;">
         <label style="position:absolute;top:8px;left:8px;z-index:2;cursor:pointer;">
-          <input type="checkbox" class="chk-imagem" data-id="${img.id}"
+          <input type="checkbox" class="chk-imagem" data-arquivo="${img.foto_servico}"
                  onchange="atualizarSelecao()"
                  style="width:18px;height:18px;accent-color:var(--brand);">
         </label>
@@ -140,7 +140,7 @@ function renderizar(imagens) {
       </div>
       <div style="padding:var(--space-3);">
         <div style="font-size:13px;font-weight:var(--fw-semibold);margin-bottom:2px;">
-          Solicitacao #${String(img.id).padStart(4,'0')}
+          Solicitacao #${String(img.id).padStart(4,'0')} <span style="font-size:11px;font-weight:normal;color:var(--secondary);">· ${img.tipo === 'conclusao' ? 'Conclusão' : 'Abertura'}</span>
         </div>
         <div style="font-size:12px;color:var(--secondary);">${img.escola_nome}</div>
         <div style="font-size:12px;color:var(--secondary);">${img.diretor_nome}</div>
@@ -171,13 +171,13 @@ function atualizarSelecao() {
 }
 
 function getSelecionadas() {
-  return Array.from(document.querySelectorAll('.chk-imagem:checked')).map(c => parseInt(c.dataset.id));
+  return Array.from(document.querySelectorAll('.chk-imagem:checked')).map(c => c.dataset.arquivo);
 }
 
 function baixarSelecionadas() {
   const ids = getSelecionadas();
   ids.forEach(id => {
-    const img = imagensAtuais.find(i => i.id === id);
+    const img = imagensAtuais.find(i => i.foto_servico === id);
     if (!img) return;
     const a = document.createElement('a');
     a.href     = `/api/upload/imagem.php?arquivo=${encodeURIComponent(img.foto_servico)}`;
@@ -195,14 +195,14 @@ async function excluirSelecionadas() {
   const res  = await fetch('/api/upload/gestao.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ids }),
+    body: JSON.stringify({ arquivos: ids }),
   });
   const data = await res.json();
 
   if (data.success) {
     // Remove cards da tela
     ids.forEach(id => document.getElementById(`card-${id}`)?.remove());
-    imagensAtuais = imagensAtuais.filter(i => !ids.includes(i.id));
+    imagensAtuais = imagensAtuais.filter(i => !ids.includes(i.foto_servico));
     document.getElementById('totalLabel').textContent = `${imagensAtuais.length} imagem(ns) encontrada(s)`;
     document.getElementById('barraAcoes').style.display = 'none';
     document.getElementById('selecionarTodos').checked  = false;

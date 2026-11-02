@@ -173,9 +173,8 @@ class QrCodeService
                 if (!$rf['success']) return $rf;
                 $nomeFoto = $rf['data']['arquivo'];
             }
-            $this->repo->atualizarStatus($idSol, App::STATUS_CONCLUIDO, ['nome_recebedor' => $obs, 'qr_invalidado' => true]);
+            $this->repo->atualizarStatus($idSol, App::STATUS_CONCLUIDO, ['nome_recebedor' => $obs, 'qr_invalidado' => true, 'foto_conclusao' => $nomeFoto]);
             $this->repo->registrarHistorico($idSol, $idDiretor, $stAnt, App::STATUS_CONCLUIDO, "Recebido por: {$obs}");
-            if ($nomeFoto) { $this->repo->salvarFotoConclusao($idSol, $nomeFoto); }
             $this->repo->registrarLogQr($idSol, $idDiretor, $token, 'sucesso', $this->ip(), $this->ua(), "Recebido por: {$obs}");
             $this->notifAdmin($solicitacao, 'concluido');
             $this->notifSuperadmins($idSol, $solicitacao['escola_nome']);

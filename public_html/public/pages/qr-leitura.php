@@ -165,7 +165,7 @@ require_once __DIR__ . '/../../templates/layout-header.php';
 
         <div class="form-group" id="blocoFotoConclusao" style="display:none;">
           <label class="form-label">Foto do serviço concluído <span class="required">*</span></label>
-          <input type="file" id="inputFotoConclusao" accept="image/*" class="form-control">
+          <input type="file" id="inputFotoConclusao" accept="image/*" capture="environment" class="form-control">
           <div class="form-hint">Fotografe o serviço finalizado. Esta foto fica registrada no histórico do pedido.</div>
         </div>
 

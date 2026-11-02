@@ -162,6 +162,24 @@ O `--pull` traz sempre o PHP mais recente. Mantenha o PHP atualizado: ele recebe
 
 ---
 
+## Componentes de terceiros
+
+O QR Code é gerado localmente, no navegador, com a biblioteca MIT
+[qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator).
+Nenhum dado é enviado a serviços externos. Detalhes em [THIRD-PARTY.md](THIRD-PARTY.md).
+
+## Leitura de QR Code pela câmera exige HTTPS
+
+A tela **Ler QR Code** usa a câmera do navegador, e os navegadores só liberam a câmera em
+conexão segura (**HTTPS**) ou em `localhost`. Em um servidor de produção com SSL isso já funciona.
+Se o sistema for acessado por **HTTP puro** (por exemplo, pelo IP da rede local), todo o resto
+funciona normalmente, mas o botão "Ativar câmera" não abre. Nesse caso é possível:
+
+- escanear o QR Code com o **app Câmera nativo** do celular (abre o link direto na tela de confirmação), ou
+- colar o token no campo **Inserir token manualmente**.
+
+A foto do serviço concluído é tirada pelo app de câmera do sistema e não depende de HTTPS.
+
 ## Contribuindo
 
 Os commits seguem o padrão [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `refactor:`, `docs:`). Sugestões e correções são bem-vindas por issue ou pull request.
@@ -171,9 +189,3 @@ Os commits seguem o padrão [Conventional Commits](https://www.conventionalcommi
 ## Licença
 
 Distribuído sob a licença **GNU AGPL-3.0**. Veja o arquivo [LICENSE](LICENSE).
-
-## Componentes de terceiros
-
-O QR Code é gerado localmente, no navegador, com a biblioteca MIT
-[qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator).
-Nenhum dado é enviado a serviços externos. Detalhes em [THIRD-PARTY.md](THIRD-PARTY.md).

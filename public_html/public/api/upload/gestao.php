@@ -10,71 +10,70 @@ AuthMiddleware::requireSuperadmin(isApi: true);
 
 $method = $_SERVER["REQUEST_METHOD"];
 $db     = Database::getInstance();
+$base   = rtrim($_ENV['UPLOADS_PATH'] ?? '/var/www/uploads', '/') . "/servicos/";
 
-// GET: listar imagens com filtro de meses
+// GET: lista fotos de abertura e de conclusão, com filtro de idade em meses (0 = todas)
 if ($method === "GET") {
-    $meses = (int) ($_GET["meses"] ?? 3);
-    if ($meses <= 0) {
-        // Mostrar todas as imagens
-        $stmt = $db->prepare("
-            SELECT s.id, s.foto_servico, s.created_at, s.status,
-                   e.nome AS escola_nome, u.nome AS diretor_nome,
-                   s.descricao_servico
+    $meses  = (int) ($_GET["meses"] ?? 3);
+    $filtro = $meses > 0 ? "WHERE t.created_at <= DATE_SUB(NOW(), INTERVAL :meses MONTH)" : "";
+
+    $sql = "
+        SELECT t.* FROM (
+            SELECT s.id, s.foto_servico AS foto_servico, 'abertura' AS tipo,
+                   s.created_at AS created_at, s.status,
+                   e.nome AS escola_nome, u.nome AS diretor_nome, s.descricao_servico
             FROM solicitacoes s
             JOIN escolas  e ON e.id = s.id_escola
             JOIN usuarios u ON u.id = s.id_diretor
             WHERE s.foto_servico IS NOT NULL
-            ORDER BY s.created_at ASC
-        ");
-        $stmt->execute();
-    } else {
-        $stmt = $db->prepare("
-            SELECT s.id, s.foto_servico, s.created_at, s.status,
-                   e.nome AS escola_nome, u.nome AS diretor_nome,
-                   s.descricao_servico
+            UNION ALL
+            SELECT s.id, s.foto_conclusao, 'conclusao',
+                   COALESCE(
+                       (SELECT MAX(h.created_at) FROM historico_status h
+                         WHERE h.id_solicitacao = s.id AND h.status_novo = 'concluido'),
+                       s.updated_at),
+                   s.status,
+                   e.nome, u.nome, s.descricao_servico
             FROM solicitacoes s
             JOIN escolas  e ON e.id = s.id_escola
             JOIN usuarios u ON u.id = s.id_diretor
-            WHERE s.foto_servico IS NOT NULL
-              AND s.created_at <= DATE_SUB(NOW(), INTERVAL :meses MONTH)
-            ORDER BY s.created_at ASC
-        ");
-        $stmt->execute([":meses" => $meses]);
-    }
+            WHERE s.foto_conclusao IS NOT NULL
+        ) t
+        {$filtro}
+        ORDER BY t.created_at ASC
+    ";
+    $stmt = $db->prepare($sql);
+    $stmt->execute($meses > 0 ? [":meses" => $meses] : []);
     $rows = $stmt->fetchAll();
 
-    // Adicionar tamanho do arquivo
-    $base = rtrim($_ENV['UPLOADS_PATH'] ?? '/var/www/uploads', '/') . "/servicos/";
     foreach ($rows as &$row) {
         $path = $base . $row["foto_servico"];
         $row["tamanho"] = file_exists($path) ? filesize($path) : 0;
         $row["existe"]  = file_exists($path);
     }
+    unset($row);
 
     Response::success("OK", ["imagens" => $rows, "total" => count($rows)]);
 }
 
-// DELETE: excluir imagens selecionadas
+// POST: excluir imagens selecionadas (por nome de arquivo)
 if ($method === "POST") {
-    $body = json_decode(file_get_contents("php://input"), true) ?? [];
-    $ids  = array_map("intval", $body["ids"] ?? []);
+    $body     = json_decode(file_get_contents("php://input"), true) ?? [];
+    $arquivos = array_values(array_unique(array_map('strval', (array) ($body["arquivos"] ?? []))));
 
-    if (empty($ids)) Response::error("Nenhuma imagem selecionada.");
+    if (empty($arquivos)) Response::error("Nenhuma imagem selecionada.");
 
-    $base    = rtrim($_ENV['UPLOADS_PATH'] ?? '/var/www/uploads', '/') . "/servicos/";
     $removidos = 0;
+    foreach ($arquivos as $nome) {
+        if (!preg_match('/^(sol|con)_[0-9]+_[0-9]+_[a-f0-9]+\.(jpg|png)$/', $nome)) continue;
 
-    foreach ($ids as $id) {
-        $stmt = $db->prepare("SELECT foto_servico FROM solicitacoes WHERE id = :id");
-        $stmt->execute([":id" => $id]);
-        $sol = $stmt->fetch();
-        if (!$sol || !$sol["foto_servico"]) continue;
+        $coluna = str_starts_with($nome, 'con_') ? 'foto_conclusao' : 'foto_servico';
+        $stmt   = $db->prepare("UPDATE solicitacoes SET {$coluna} = NULL, updated_at = updated_at WHERE {$coluna} = :n");
+        $stmt->execute([":n" => $nome]);
+        if ($stmt->rowCount() === 0) continue;
 
-        $arquivo = $base . $sol["foto_servico"];
+        $arquivo = $base . $nome;
         if (file_exists($arquivo)) @unlink($arquivo);
-
-        $db->prepare("UPDATE solicitacoes SET foto_servico = NULL WHERE id = :id")
-           ->execute([":id" => $id]);
         $removidos++;
     }
 

@@ -203,6 +203,10 @@ class SolicitacaoRepository
             $campos[] = 'cancelado_por = :cancelado_por';
             $params[':cancelado_por'] = $extras['cancelado_por'];
         }
+        if (isset($extras['foto_conclusao'])) {
+            $campos[] = 'foto_conclusao = :foto_conc';
+            $params[':foto_conc'] = $extras['foto_conclusao'];
+        }
         if (isset($extras['qr_invalidado'])) {
             $campos[] = 'qr_invalidado = :qr_inv';
             $params[':qr_inv'] = $extras['qr_invalidado'] ? 1 : 0;

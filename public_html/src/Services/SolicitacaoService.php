@@ -244,7 +244,7 @@ class SolicitacaoService
     public function gerarQrUrl(string $token): string
     {
         $baseUrl = $_ENV['APP_URL'] ?? '';
-        return "{$baseUrl}/public/pages/qr-leitura.php?token={$token}";
+        return "{$baseUrl}/pages/qr-leitura.php?token={$token}";
     }
 
     // ================================================================

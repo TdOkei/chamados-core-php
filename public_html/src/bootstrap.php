@@ -32,6 +32,7 @@ if ($debug) {
     ini_set('display_startup_errors', '0');
     error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
     set_exception_handler(function (\Throwable $e) {
+        error_log('[tdokei] ' . get_class($e) . ': ' . $e->getMessage() . ' em ' . $e->getFile() . ':' . $e->getLine());
         $isApi = str_contains($_SERVER['REQUEST_URI'] ?? '', '/api/');
         if ($isApi) {
             http_response_code(500);
