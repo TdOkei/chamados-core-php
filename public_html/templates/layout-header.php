@@ -79,7 +79,7 @@ if (in_array($perfil, App::PERFIS_OPERACIONAIS_ESCOLA, true) && !in_array($perfi
   <link rel="stylesheet" href="/assets/css/design-system.css">
 
   <!-- Lucide Icons (via CDN) -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+  <script src="/assets/js/vendor/lucide.min.js" defer></script>
 
   <?php if (isset($extraStyles)) echo $extraStyles; ?>
 </head>

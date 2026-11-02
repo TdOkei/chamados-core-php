@@ -190,7 +190,7 @@ require_once __DIR__ . '/../../templates/layout-header.php';
 </div>
 
 <!-- Chart.js via CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="/assets/js/vendor/chart.umd.min.js"></script>
 
 <script>
 let chartMes      = null;

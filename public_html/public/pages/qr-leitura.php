@@ -200,7 +200,7 @@ require_once __DIR__ . '/../../templates/layout-header.php';
 }
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="/assets/js/vendor/jsQR.js"></script>
 <script src="/assets/js/img-resize.js"></script>
 <script>
 let videoStream = null;

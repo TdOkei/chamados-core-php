@@ -26,7 +26,7 @@ if (($_GET['sessao'] ?? '') === 'expirada') {
   <link rel="icon" type="image/png" href="/favicon.png">
   <title>Entrar — Sistema de Pedidos</title>
   <link rel="stylesheet" href="/assets/css/design-system.css">
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+  <script src="/assets/js/vendor/lucide.min.js" defer></script>
   <style>
     body {
       display: flex;

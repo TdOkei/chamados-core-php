@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>404 — Página não encontrada</title>
   <link rel="stylesheet" href="/assets/css/design-system.css">
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+  <script src="/assets/js/vendor/lucide.min.js" defer></script>
   <style>
     body { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:var(--space-6); }
   </style>
