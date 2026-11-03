@@ -82,11 +82,11 @@ require_once __DIR__ . '/../../templates/layout-header.php';
     <div class="card" style="border-radius:var(--radius-xl);">
       <div class="d-flex align-center justify-between mb-4">
         <div class="card-title">Itens do pedido</div>
-        <button type="button" class="btn btn-outline btn-sm" onclick="adicionarItem()">
-          <i data-lucide="plus" width="14" height="14"></i> Adicionar item
-        </button>
       </div>
       <div id="listaItens" style="display:flex;flex-direction:column;gap:var(--space-4);"></div>
+      <button type="button" class="btn btn-outline" onclick="adicionarItem()" style="width:100%;justify-content:center;margin-top:var(--space-4);">
+        <i data-lucide="plus" width="16" height="16"></i> Adicionar item
+      </button>
       <div class="divider mt-4"></div>
       <div class="d-flex justify-between align-center mt-4 flex-wrap gap-3">
         <p style="font-size:13px;color:var(--secondary);">Máximo 30 itens por solicitação.</p>
@@ -266,6 +266,7 @@ function adicionarItem() {
   `;
   lista.appendChild(div);
   if (window.lucide) lucide.createIcons();
+  if (num > 1) div.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function removerItem(id) {
