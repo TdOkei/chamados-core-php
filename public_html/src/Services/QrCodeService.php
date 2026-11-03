@@ -138,7 +138,7 @@ class QrCodeService
             $nomesItens = [];
             foreach ($todosItens as $item) {
                 if (in_array((int)$item['id'], array_map('intval', $itensFaltando))) {
-                    $nomesItens[] = $item['produto_nome'] . ' (' . number_format((float)$item['quantidade'], 2, ',', '.') . ' ' . $item['unidade_sigla'] . ')';
+                    $nomesItens[] = $item['produto_nome'] . (!empty($item['detalhes']) ? ' [' . $item['detalhes'] . ']' : '') . ' (' . number_format((float)$item['quantidade'], 2, ',', '.') . ' ' . $item['unidade_sigla'] . ')';
                 }
             }
             $nomeRecebedor = trim($observacao);
@@ -149,7 +149,7 @@ class QrCodeService
             $idsEntregues = array_map('intval', $itensEntregues);
             foreach ($todosItens as $item) {
                 if (in_array((int) $item['id'], $idsEntregues, true)) {
-                    $nomesEntregues[] = $item['produto_nome'] . ' (' . number_format((float) $item['quantidade'], 2, ',', '.') . ' ' . $item['unidade_sigla'] . ')';
+                    $nomesEntregues[] = $item['produto_nome'] . (!empty($item['detalhes']) ? ' [' . $item['detalhes'] . ']' : '') . ' (' . number_format((float) $item['quantidade'], 2, ',', '.') . ' ' . $item['unidade_sigla'] . ')';
                 }
             }
             $obs = 'Recebido por: ' . $nomeRecebedor
@@ -188,7 +188,7 @@ class QrCodeService
             $nomesFinal  = [];
             foreach ($this->repo->buscarItens($idSol) as $item) {
                 if (!in_array((int) $item['id'], $jaEntregues, true)) {
-                    $nomesFinal[] = $item['produto_nome'] . ' (' . number_format((float) $item['quantidade'], 2, ',', '.') . ' ' . $item['unidade_sigla'] . ')';
+                    $nomesFinal[] = $item['produto_nome'] . (!empty($item['detalhes']) ? ' [' . $item['detalhes'] . ']' : '') . ' (' . number_format((float) $item['quantidade'], 2, ',', '.') . ' ' . $item['unidade_sigla'] . ')';
                 }
             }
             $txtEntrega = mb_strimwidth('Recebido por: ' . $obs . ($nomesFinal ? '. Itens entregues: ' . implode(', ', $nomesFinal) : ''), 0, 400, '…');

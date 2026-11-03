@@ -128,7 +128,7 @@ class SolicitacaoRepository
     public function buscarItens(int $idSolicitacao): array
     {
         $stmt = $this->db->prepare(
-            "SELECT si.id, si.quantidade,
+            "SELECT si.id, si.quantidade, si.detalhes,
                     p.nome AS produto_nome, p.id AS produto_id,
                     u.nome AS unidade_nome, u.sigla AS unidade_sigla
              FROM solicitacao_itens si
@@ -140,17 +140,18 @@ class SolicitacaoRepository
         return $stmt->fetchAll();
     }
 
-    public function inserirItem(int $idSolicitacao, int $idProduto, int $idUnidade, float $quantidade): void
+    public function inserirItem(int $idSolicitacao, int $idProduto, int $idUnidade, float $quantidade, ?string $detalhes = null): void
     {
         $stmt = $this->db->prepare(
-            'INSERT INTO solicitacao_itens (id_solicitacao, id_produto, id_unidade, quantidade)
-             VALUES (:sol, :prod, :un, :qtd)'
+            'INSERT INTO solicitacao_itens (id_solicitacao, id_produto, id_unidade, quantidade, detalhes)
+             VALUES (:sol, :prod, :un, :qtd, :det)'
         );
         $stmt->execute([
             ':sol'  => $idSolicitacao,
             ':prod' => $idProduto,
             ':un'   => $idUnidade,
             ':qtd'  => $quantidade,
+            ':det'  => $detalhes,
         ]);
     }
 
@@ -232,7 +233,7 @@ class SolicitacaoRepository
     public function buscarEntregasAgrupadas(int $idSolicitacao): array
     {
         $stmt = $this->db->prepare(
-            'SELECT e.id_log_qrcode, si.quantidade, p.nome AS produto_nome, u.sigla AS unidade_sigla,
+            'SELECT e.id_log_qrcode, si.quantidade, si.detalhes, p.nome AS produto_nome, u.sigla AS unidade_sigla,
                     l.created_at AS entregue_em, l.observacao AS log_obs
              FROM solicitacao_itens_entregues e
              JOIN solicitacao_itens si ON si.id = e.id_item
@@ -257,6 +258,7 @@ class SolicitacaoRepository
             }
             $viagens[$k]['itens'][] = [
                 'nome' => $r['produto_nome'],
+                'detalhes' => $r['detalhes'],
                 'qtd'  => (float) $r['quantidade'],
                 'un'   => $r['unidade_sigla'],
             ];

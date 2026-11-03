@@ -84,6 +84,9 @@ class SolicitacaoService
             if ($qtd === false || $qtd <= 0) {
                 return $this->fail("Item {$n}: informe uma quantidade válida.");
             }
+            if (mb_strlen(trim((string) ($item['detalhes'] ?? ''))) > 100) {
+                return $this->fail("Item {$n}: os detalhes podem ter no máximo 100 caracteres.");
+            }
         }
 
         $id = $this->repo->criar([
@@ -97,7 +100,8 @@ class SolicitacaoService
                 $id,
                 (int) $item['id_produto'],
                 (int) $item['id_unidade'],
-                (float) $item['quantidade']
+                (float) $item['quantidade'],
+                trim((string) ($item['detalhes'] ?? '')) ?: null
             );
         }
 

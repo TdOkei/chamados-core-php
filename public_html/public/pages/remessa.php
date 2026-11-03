@@ -138,7 +138,7 @@ $temParcial = !$d['concluida'] && !empty($d['itens_entregues']);
           <table style="margin-top:6px;">
             <tr><th>Item</th><th>Unid.</th><th class="n">Qtd.</th></tr>
             <?php foreach ($d['itens'] as $i): ?>
-              <tr><td><?= $h($i['produto_nome']) ?></td><td><?= $h($i['unidade_sigla']) ?></td><td class="n"><?= $h(number_format((float) $i['quantidade'], 2, ',', '.')) ?></td></tr>
+              <tr><td><?= $h($i['produto_nome']) ?><?php if (!empty($i['detalhes'])): ?> <small>— <?= $h($i['detalhes']) ?></small><?php endif; ?></td><td><?= $h($i['unidade_sigla']) ?></td><td class="n"><?= $h(number_format((float) $i['quantidade'], 2, ',', '.')) ?></td></tr>
             <?php endforeach; ?>
           </table>
         <?php endif; ?>
@@ -148,7 +148,7 @@ $temParcial = !$d['concluida'] && !empty($d['itens_entregues']);
           <?php foreach ($d['itens'] as $k => $i): ?>
             <tr>
               <td><?= $k + 1 ?></td>
-              <td><?= $h($i['produto_nome']) ?><?php if ($temParcial && in_array((int) $i['id'], $d['itens_entregues'], true)): ?> <em style="font-size:10px;">(já entregue)</em><?php endif; ?></td>
+              <td><?= $h($i['produto_nome']) ?><?php if (!empty($i['detalhes'])): ?> <small>— <?= $h($i['detalhes']) ?></small><?php endif; ?><?php if ($temParcial && in_array((int) $i['id'], $d['itens_entregues'], true)): ?> <em style="font-size:10px;">(já entregue)</em><?php endif; ?></td>
               <td><?= $h($i['unidade_sigla']) ?></td>
               <td class="n"><?= $h(number_format((float) $i['quantidade'], 2, ',', '.')) ?></td>
             </tr>
@@ -181,7 +181,7 @@ $temParcial = !$d['concluida'] && !empty($d['itens_entregues']);
       <tr>
         <td><?= $en['quando'] ? $h($dt($en['quando'])) : '—' ?></td>
         <td><?= $h($en['recebedor']) ?></td>
-        <td><?php foreach ($en['itens'] as $it): ?><?= $h($it['nome']) ?> — <?= $h(number_format($it['qtd'], 2, ',', '.')) ?> <?= $h($it['un']) ?><br><?php endforeach; ?></td>
+        <td><?php foreach ($en['itens'] as $it): ?><?= $h($it['nome']) ?><?= !empty($it['detalhes']) ? ' (' . $h($it['detalhes']) . ')' : '' ?> — <?= $h(number_format($it['qtd'], 2, ',', '.')) ?> <?= $h($it['un']) ?><br><?php endforeach; ?></td>
       </tr>
     <?php endforeach; ?>
   </table>

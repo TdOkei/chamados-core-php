@@ -301,7 +301,7 @@ function renderDetalhe(s) {
     s.itens.map(i => {
       const jaEntregue = entregues.includes(parseInt(i.id));
       return `<tr style="border-top:1px solid var(--neutral-200);${jaEntregue ? 'opacity:0.6;' : ''}">
-        <td style="padding:11px 14px;font-weight:500;${jaEntregue ? 'text-decoration:line-through;color:var(--secondary);' : ''}">${i.produto_nome}</td>
+        <td style="padding:11px 14px;font-weight:500;${jaEntregue ? 'text-decoration:line-through;color:var(--secondary);' : ''}">${i.produto_nome}${i.detalhes ? ' <small style="color:var(--secondary);">— ' + String(i.detalhes).replace(/[&<>"']/g, c => '&#' + c.charCodeAt(0) + ';') + '</small>' : ''}</td>
         <td style="padding:11px 14px;text-align:right;font-weight:700;color:${jaEntregue ? 'var(--secondary)' : 'var(--brand)'};font-size:15px;">${parseFloat(i.quantidade)} ${i.unidade_sigla}</td>
         <td style="padding:11px 14px;text-align:center;">
           ${jaEntregue

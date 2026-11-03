@@ -369,7 +369,7 @@ function renderizarItens() {
       <input type="checkbox" data-item-id="${item.id}" class="form-check-input" style="width:20px;height:20px;flex-shrink:0;"
              onchange="this.closest('label').style.borderColor=this.checked?'var(--brand)':'transparent';">
       <div style="flex:1;">
-        <div style="font-size:14px;font-weight:var(--fw-medium);">${item.produto_nome}</div>
+        <div style="font-size:14px;font-weight:var(--fw-medium);">${item.produto_nome}${item.detalhes ? ' <span style="color:var(--secondary);font-weight:400;">— ' + String(item.detalhes).replace(/[&<>"']/g, c => '&#' + c.charCodeAt(0) + ';') + '</span>' : ''}</div>
         <div style="font-size:12px;color:var(--secondary);">${qtd} ${item.unidade_sigla}</div>
       </div>
       <i data-lucide="package-x" width="16" height="16" style="color:var(--secondary);flex-shrink:0;"></i>

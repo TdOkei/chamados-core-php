@@ -178,7 +178,7 @@ require_once __DIR__ . '/../../templates/layout-header.php';
                 <?= $i + 1 ?>
               </div>
               <span style="font-size:14px;font-weight:var(--fw-medium);<?= $jaEntregue ? 'text-decoration:line-through;color:var(--secondary);' : '' ?>">
-                <?= htmlspecialchars($item['produto_nome']) ?>
+                <?= htmlspecialchars($item['produto_nome']) ?><?php if (!empty($item['detalhes'])): ?> <span style="color:var(--secondary);font-size:12px;">— <?= htmlspecialchars($item['detalhes']) ?></span><?php endif; ?>
               </span>
             </div>
             <div style="display:flex;align-items:center;gap:var(--space-2);">
@@ -412,7 +412,7 @@ require_once __DIR__ . '/../../templates/layout-header.php';
           </div>
           <ul style="margin:6px 0 0 18px;padding:0;font-size:13px;color:var(--secondary);">
             <?php foreach ($en['itens'] as $it): ?>
-            <li><?= htmlspecialchars((string) $it['nome'], ENT_QUOTES) ?> — <?= number_format($it['qtd'], 2, ',', '.') ?> <?= htmlspecialchars((string) $it['un'], ENT_QUOTES) ?></li>
+            <li><?= htmlspecialchars((string) $it['nome'], ENT_QUOTES) ?><?= !empty($it['detalhes']) ? ' (' . htmlspecialchars((string) $it['detalhes'], ENT_QUOTES) . ')' : '' ?> — <?= number_format($it['qtd'], 2, ',', '.') ?> <?= htmlspecialchars((string) $it['un'], ENT_QUOTES) ?></li>
             <?php endforeach; ?>
           </ul>
         </div>

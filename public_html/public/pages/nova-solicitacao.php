@@ -257,6 +257,11 @@ function adicionarItem() {
           </select>
         </div>
       </div>
+      <div>
+        <label class="form-label" style="font-size:12px;">Detalhes <span style="font-weight:400;color:var(--secondary);">(opcional)</span></label>
+        <input type="text" maxlength="100" class="form-control item-detalhes" placeholder="Ex.: tamanho G, nº 38, cor azul" style="background:var(--white);" oninput="this.nextElementSibling.textContent=this.value.length+'/100'">
+        <div style="font-size:11px;color:var(--secondary);text-align:right;margin-top:2px;">0/100</div>
+      </div>
     </div>
   `;
   lista.appendChild(div);
@@ -317,7 +322,7 @@ async function enviarSolicitacao(categoria) {
       if (!prod) { erro = `Item ${i+1}: selecione o produto.`; return; }
       if (isNaN(qtd) || qtd <= 0) { erro = `Item ${i+1}: informe uma quantidade válida.`; return; }
       if (!un)  { erro = `Item ${i+1}: selecione a unidade de medida.`; return; }
-      itens.push({ id_produto: parseInt(prod), id_unidade: parseInt(un), quantidade: qtd });
+      itens.push({ id_produto: parseInt(prod), id_unidade: parseInt(un), quantidade: qtd, detalhes: (div.querySelector('.item-detalhes')?.value || '').trim() });
     });
     if (erro)  return mostrarAlerta(erro, 'danger');
     if (!itens.length) return mostrarAlerta('Adicione pelo menos um item ao pedido.', 'danger');

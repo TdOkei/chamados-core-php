@@ -290,6 +290,7 @@ CREATE TABLE `solicitacao_itens` (
   `id_produto` int(11) NOT NULL,
   `id_unidade` int(11) NOT NULL,
   `quantidade` decimal(10,2) NOT NULL,
+  `detalhes` varchar(100) DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
