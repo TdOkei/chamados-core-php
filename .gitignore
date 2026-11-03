@@ -21,3 +21,7 @@ cookies.txt
 .env
 !docker/db/schema.sql
 !docker/db/seed.sql
+
+# Python
+__pycache__/
+*.pyc
