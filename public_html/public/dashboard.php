@@ -62,6 +62,22 @@ if ($perfil === App::PERFIL_SUPERADMIN) {
     $stmtR->execute([':cat' => $categoria]);
     $recentes = $stmtR->fetchAll();
 
+    // Ate 8 pedidos de cada status, na ordem da fila (usado pelos cards-filtro)
+    $porStatus = [];
+    $stmtS = $db->prepare(
+        'SELECT s.id, s.categoria, s.status, s.created_at,
+                e.nome AS escola
+         FROM solicitacoes s
+         JOIN escolas e ON e.id = s.id_escola
+         WHERE s.categoria = :cat AND s.status = :st
+         ORDER BY s.created_at ASC
+         LIMIT 8'
+    );
+    foreach (['pendente','em_analise','em_processamento','despachado'] as $st) {
+        $stmtS->execute([':cat' => $categoria, ':st' => $st]);
+        $porStatus[$st] = $stmtS->fetchAll();
+    }
+
 } elseif ($perfil === App::PERFIL_SECRETARIO) {
     header('Location: /pages/historico.php');
     exit;
@@ -213,7 +229,9 @@ require_once __DIR__ . '/../templates/layout-header.php';
     ];
     foreach ($adminStats as $key => $info):
     ?>
-    <div class="stat-card animate-slide-up">
+    <div class="stat-card animate-slide-up stat-filtro" role="button" tabindex="0" aria-pressed="false" data-filtro="<?= $key ?>"
+         onclick="filtrarPedidos('<?= $key ?>')"
+         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();filtrarPedidos('<?= $key ?>');}">
       <div class="stat-icon <?= $info['class'] ?>">
         <i data-lucide="<?= $info['icon'] ?>" width="22" height="22"></i>
       </div>
@@ -230,7 +248,45 @@ require_once __DIR__ . '/../templates/layout-header.php';
       <h3 class="card-title">Próximas da Fila</h3>
       <a href="/pages/fila.php" class="btn btn-brand btn-sm">Ver fila completa</a>
     </div>
-    <?= renderTabelaSolicitacoes($recentes, $perfil) ?>
+
+    <div id="avisoFiltro" style="display:none;align-items:center;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) var(--space-4);margin-bottom:var(--space-3);background:var(--neutral-100);border-radius:var(--radius-lg);font-size:13px;">
+      <span id="avisoFiltroTxt"></span>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="filtrarPedidos(null)">Limpar filtro</button>
+    </div>
+
+    <div data-painel="todos"><?= renderTabelaSolicitacoes($recentes, $perfil) ?></div>
+    <?php foreach ($adminStats as $key => $info): ?>
+    <div data-painel="<?= $key ?>" style="display:none;"><?= renderTabelaSolicitacoes($porStatus[$key] ?? [], $perfil) ?></div>
+    <?php endforeach; ?>
+
+    <style>
+      .stat-filtro { cursor:pointer; transition:transform .15s ease, box-shadow .15s ease; }
+      .stat-filtro:hover { transform:translateY(-2px); }
+      .stat-filtro:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+      .stat-filtro.ativo { box-shadow:0 0 0 2px var(--brand); background:var(--white); }
+    </style>
+    <script>
+    let filtroAtivo = null;
+    function filtrarPedidos(chave) {
+      filtroAtivo = (chave === filtroAtivo) ? null : chave;
+      document.querySelectorAll('[data-painel]').forEach(p => {
+        p.style.display = (p.dataset.painel === (filtroAtivo || 'todos')) ? '' : 'none';
+      });
+      document.querySelectorAll('.stat-filtro').forEach(c => {
+        const on = c.dataset.filtro === filtroAtivo;
+        c.classList.toggle('ativo', on);
+        c.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      const aviso = document.getElementById('avisoFiltro');
+      if (!filtroAtivo) { aviso.style.display = 'none'; return; }
+      const card  = document.querySelector('.stat-filtro[data-filtro="' + filtroAtivo + '"]');
+      const nome  = card.querySelector('.stat-label').textContent.trim();
+      const total = parseInt(card.querySelector('.stat-value').textContent, 10) || 0;
+      document.getElementById('avisoFiltroTxt').textContent =
+        'Mostrando: ' + nome + (total > 8 ? ' (' + total + ' no total, as 8 primeiras da fila)' : ' (' + total + ')');
+      aviso.style.display = 'flex';
+    }
+    </script>
   </div>
 
 
