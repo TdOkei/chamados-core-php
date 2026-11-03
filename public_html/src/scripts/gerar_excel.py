@@ -172,24 +172,24 @@ def main():
         for ci, val in enumerate(valores, start=1):
             c = ws.cell(row=row, column=ci, value=val)
             c.font      = Font(name='Arial', size=9)
-            c.alignment = Alignment(vertical='top', wrap_text=True)
+            c.alignment = Alignment(vertical='center', wrap_text=True)
             c.border    = thin_border()
 
             # Colorir coluna de status
             if ci == 6:
                 c.fill = PatternFill('solid', start_color=status_cores[0])
                 c.font = Font(name='Arial', size=9, bold=True, color=status_cores[1])
-                c.alignment = Alignment(horizontal='center', vertical='top')
+                c.alignment = Alignment(horizontal='center', vertical='center')
             elif ci == 5:
-                cat_bg = 'DBEAFE' if val == 'Produto' else 'EDE9FE'
-                cat_fg = '1E40AF' if val == 'Produto' else '5B21B6'
+                cat_bg = 'DBEAFE' if val == 'Produto' else 'FEF9C3'
+                cat_fg = '1E40AF' if val == 'Produto' else '854D0E'
                 c.fill = PatternFill('solid', start_color=cat_bg)
                 c.font = Font(name='Arial', size=9, color=cat_fg, bold=True)
-                c.alignment = Alignment(horizontal='center', vertical='top')
+                c.alignment = Alignment(horizontal='center', vertical='center')
             elif ci == 1:
                 c.fill = PatternFill('solid', start_color=COR_SUBHEADER)
                 c.font = Font(name='Arial', size=9, color='71717A')
-                c.alignment = Alignment(horizontal='center', vertical='top')
+                c.alignment = Alignment(horizontal='center', vertical='center')
             else:
                 c.fill = PatternFill('solid', start_color=bg_base)
 
@@ -271,11 +271,11 @@ def main():
             c = ws2.cell(row=row, column=ci, value=val)
             c.font   = Font(name='Arial', size=9)
             c.border = thin_border()
-            c.alignment = Alignment(vertical='top', wrap_text=True)
+            c.alignment = Alignment(vertical='center', wrap_text=True)
             if ci == 5:
                 c.fill = PatternFill('solid', start_color=res_cores[0])
                 c.font = Font(name='Arial', size=9, bold=True, color=res_cores[1])
-                c.alignment = Alignment(horizontal='center', vertical='top')
+                c.alignment = Alignment(horizontal='center', vertical='center')
             else:
                 c.fill = PatternFill('solid', start_color=bg_base)
         ws2.row_dimensions[row].height = 16
